@@ -1,98 +1,90 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   allocation.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/09/18 23:31:50 by waddam            #+#    #+#             */
+/*   Updated: 2020/01/07 15:13:34 by dmorar           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lemin.h"
 
-
-
-int		**ft_make_sets(char **map, t_room **room, t_lem *lem)
+int		*alloc_qu(int len, t_lem *lem)
 {
-	int		i;
-	int		**set;
+	int	*tmp;
 
-	i = 0;
-	set = ft_allocate_matrix_int(lem->count_rooms);
-	while (map[i])
-	{
-		if (ft_valid_str(map[i]) == 5)
-			ft_write_links(map[i], room, set);
-		i++;
-	}
-	return (set);
+	if (!(tmp = (int *)malloc(sizeof(int) * len)))
+		leave();
+	ft_memset(tmp, -1, sizeof(int) * len);
+	lem->qu = tmp;
+	return (tmp);
 }
 
-
-char	**ft_allocate_matrix_char(int dim)
-{
-	int		i;
-	char	**matrix;
-
-	i = 0;
-	matrix = NULL;
-	matrix = (char **)malloc(sizeof(char *) * (dim + 1));
-	while (i < dim)
-	{
-		matrix[i] = ft_strnew(dim);
-		ft_memset(matrix[i], '0', dim);
-		i++;
-	}
-	matrix[i] = NULL;
-	return (matrix);
-}
-
-int		**ft_allocate_matrix_int(int dim)
-{
-	int		i;
-	int		**matrix;
-
-	i = 0;
-	dim++;
-	matrix = (int **)malloc(sizeof(int *) * dim);
-	while (i < dim)
-	{
-		matrix[i] = (int *)malloc(sizeof(int) * dim); // 02.09 удалил дополнительное умножение на dim
-		ft_memset(matrix[i], -1, dim * 4);
-		i++;
-	}
-	return (matrix);
-}
-
-// Создает несимметричную int матрицу и заполняет ее "-1"
-// x длина, y высота
-
-int		**ft_allocate_matrix_int_new(int x, int y)
-{
-	int		i;
-	int		**matrix;
-
-	i = 0;
-	matrix = (int **)malloc(sizeof(int *) * y);
-	while (i < y)
-	{
-		matrix[i] = (int *)malloc(sizeof(int) * x);
-		ft_memset(matrix[i], -1, x * 4);
-		i++;
-	}
-	return (matrix);
-}
-
-
-
-t_room	**ft_allocate_memory(t_lem *lem)
+t_room	**alloc_rooms(t_lem *lem)
 {
 	int		i;
 	t_room	**room;
 
 	i = 0;
-	if (!(room = (t_room**)malloc(sizeof(t_room*) * (lem->count_rooms + 1))))
-		ft_leave();
-	while (i < lem->count_rooms)
+	if (!(room = (t_room **)malloc(sizeof(t_room *) * (lem->count_rooms + 1))))
+		leave();
+	while (i < (lem->count_rooms))
 	{
 		if (!(room[i] = (t_room *)malloc(sizeof(t_room))))
 		{
-			ft_free_room(&room, i);
-			return (NULL);
+			free_room(&room, i);
+			leave();
 		}
-		ft_initialization_room(room[i]);
+		init(room[i], sizeof(t_room));
 		i++;
 	}
+	room[i] = NULL;
 	return (room);
 }
 
+t_path	**alloc_path(int len, int count_rooms)
+{
+	int		i;
+	t_path	**path;
+
+	i = 0;
+	if (!(path = (t_path **)malloc(sizeof(t_path *) * (len))))
+		leave();
+	while (i < len)
+	{
+		if (!(path[i] = (t_path *)malloc(sizeof(t_path))))
+		{
+			free_path(count_rooms, path, i);
+			leave();
+		}
+		init(path[i], sizeof(t_path));
+		path[i]->path = alloc_matrix(count_rooms, count_rooms);
+		i++;
+	}
+	return (path);
+}
+
+int		**alloc_matrix(int x, int y)
+{
+	int		i;
+	int		**matrix;
+
+	i = 0;
+	if (!(matrix = (int **)malloc(sizeof(int *) * (y + 1))))
+		leave();
+	while (i < (y + 1))
+	{
+		if (!(matrix[i] = (int *)malloc(sizeof(int) * (x + 1))))
+		{
+			free_matrix(&matrix, i);
+			leave();
+		}
+		ft_memset(matrix[i], -1, sizeof(int) * (x + 1));
+		i++;
+	}
+	matrix[i] = NULL;
+	return (matrix);
+}

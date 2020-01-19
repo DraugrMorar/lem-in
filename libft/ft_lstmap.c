@@ -3,47 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <nwispmot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/23 16:53:52 by nwispmot          #+#    #+#             */
-/*   Updated: 2018/12/29 18:40:57 by nwispmot         ###   ########.fr       */
+/*   Created: 2018/12/13 15:01:01 by dmorar            #+#    #+#             */
+/*   Updated: 2018/12/13 15:56:59 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static void	del(void *content, size_t contentsize)
+t_list	*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem))
 {
-	free(content);
-	contentsize = 0;
-	content = NULL;
-}
+	t_list *new_list;
+	t_list *new_ptr;
+	t_list *res;
 
-t_list		*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem))
-{
-	t_list *fresh;
-	t_list *new;
-	t_list *tmp;
-
-	fresh = NULL;
-	new = NULL;
-	if (lst && f)
+	new_list = NULL;
+	new_ptr = NULL;
+	if (!lst || !f)
+		return (NULL);
+	while (lst)
 	{
-		while (lst)
-		{
-			tmp = f(lst);
-			if (new && (new->next = ft_lstnew(tmp->content, tmp->content_size)))
-				new = new->next;
-			else if (!new && (new = ft_lstnew(tmp->content, tmp->content_size)))
-				fresh = new;
-			else
-			{
-				ft_lstdel(&fresh, &del);
-				break ;
-			}
-			lst = lst->next;
-		}
-		return (fresh);
+		res = f(lst);
+		if (new_ptr && (new_ptr->next =
+		ft_lstnew(res->content, res->content_size)))
+			new_ptr = new_ptr->next;
+		else if (!new_ptr && (new_ptr =
+		ft_lstnew(res->content, res->content_size)))
+			new_list = new_ptr;
+		else
+			ft_lstdel(&new_list, &ft_bzero);
+		lst = lst->next;
 	}
-	return (NULL);
+	return (new_list);
 }

@@ -3,95 +3,83 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/23 19:17:43 by nwispmot          #+#    #+#             */
-/*   Updated: 2019/05/23 19:17:45 by nwispmot         ###   ########.fr       */
+/*   Created: 2019/03/02 17:05:03 by dmorar            #+#    #+#             */
+/*   Updated: 2019/03/28 16:05:56 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include "libft.h"
 
-void	init(t_pf *pf)
+int		writediftype(t_form *lst, va_list ap)
 {
-	int i;
+	if (lst->type == 0)
+		return (printchar(lst, va_arg(ap, int)));
+	else if (lst->type == 1)
+		return (printstr(lst, va_arg(ap, char *)));
+	else if (lst->type == 2)
+		return (sizepointer(lst, va_arg(ap, unsigned long long int)));
+	else if (lst->type == 3 || lst->type == 4)
+		return (whatsize(lst, va_arg(ap, long long int)));
+	else if (lst->type == 5)
+		return (octalint(lst, va_arg(ap, unsigned long long int)));
+	else if (lst->type == 6)
+		return (sizeforunsign(lst, va_arg(ap, unsigned long long int)));
+	else if (lst->type == 7 || lst->type == 8)
+		return (hexalint(lst, va_arg(ap, unsigned long long int)));
+	else if (lst->type == 10)
+		return (printchar(lst, '%'));
+	else if (lst->type == 9)
+	{
+		if (lst->size == 5)
+			return (floatsize(lst, va_arg(ap, long double)));
+		else
+			return (floatsize(lst, va_arg(ap, double)));
+	}
+	return (0);
+}
+
+int		ft_printf2(char *str, va_list ap, t_form *lst)
+{
+	int			i;
+	int			count;
 
 	i = 0;
-	pf->flags[12] = '\0';
-	while (i < 13)
+	count = 0;
+	while (str[i] != '\0')
 	{
-		pf->flags[i] = 0;
-		i++;
-	}
-	pf->flags[prec] = -1;
-}
-
-void	conversion(t_pf *pf, va_list ap)
-{
-	if (pf->convers == 'd' || pf->convers == 'i')
-		conv_di(pf, ap);
-	else if (pf->convers == 's')
-		conv_s(pf, ap);
-	else if (pf->convers == 'c')
-		conv_c(pf, ap);
-	else if (pf->convers == 'u')
-		conv_u(pf, ap);
-	else if (pf->convers == 'o')
-		conv_o(pf, ap);
-	else if (pf->convers == 'x')
-		conv_lx(pf, ap);
-	else if (pf->convers == 'X')
-		conv_ux(pf, ap);
-	else if (pf->convers == '%')
-		conv_percent(pf, ap);
-	else if (pf->convers == 'p')
-		conv_p(pf, ap);
-	else if (pf->convers == 'f')
-		conv_f(pf, ap);
-	else
-		pf->size += write(1, &pf->convers, 1);
-}
-
-void	val(t_pf *pf, va_list ap, char *string)
-{
-	int i;
-
-	i = -1;
-	while (string[++i])
-	{
-		if (string[i] == '%')
+		if (str[i] == '%' && str[i + 1] != '\0')
 		{
-			init(pf);
-			i += parse(&string[i], pf);
-			conversion(pf, ap);
-			if (string[i] == '\0')
-				break ;
-			pf->size++;
+			i += ifpercent(&str[i], lst, ap);
+			count += writediftype(lst, ap);
+			free(lst->flags);
 		}
-		else
-			pf->size++;
-		if (string[i] != '%')
-			write(1, &string[i], 1);
-		else
+		else if (str[i] == '%' && str[i + 1] == '\0')
+			i++;
+		else if ((str[i] == '%' && str[i + 1] == '%') ||
+		(str[i] != '%' && str[i] != '\0'))
 		{
-			i--;
-			pf->size--;
+			if (str[i] == '%' && str[i + 1] == '%')
+				i++;
+			ft_putchar(str[i++]);
+			count++;
 		}
 	}
+	return (count);
 }
 
-int		ft_printf(char *string, ...)
+int		ft_printf(char *str, ...)
 {
+	int		count;
+	t_form	*lst;
 	va_list	ap;
-	t_pf	*pf;
-	int		size;
 
-	pf = (t_pf*)malloc(sizeof(t_pf));
-	pf->size = 0;
-	va_start(ap, string);
-	val(pf, ap, string);
+	count = 0;
+	va_start(ap, str);
+	lst = (t_form *)malloc(sizeof(t_form));
+	count = ft_printf2(str, ap, lst);
 	va_end(ap);
-	size = pf->size;
-	free(pf);
-	return (size);
+	free(lst);
+	return (count);
 }

@@ -3,51 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   ft_ltoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/22 21:36:13 by nwispmot          #+#    #+#             */
-/*   Updated: 2019/05/22 21:36:17 by nwispmot         ###   ########.fr       */
+/*   Created: 2019/04/02 13:56:35 by dmorar            #+#    #+#             */
+/*   Updated: 2019/04/14 20:24:17 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "./libft.h"
 
-static	int	calc_len(long long a)
+static int	countnum(long long int n)
 {
 	int		i;
 
 	i = 0;
-	if (a <= 0)
+	if (n == 0)
 		i++;
-	while (a != 0)
+	if (n < 0)
 	{
-		a /= 10;
+		n = -n;
+		i++;
+	}
+	while (n > 0)
+	{
+		n = (n / 10);
 		i++;
 	}
 	return (i);
 }
 
-char		*ft_ltoa(long long n)
+char		*changetostr(long long int n)
 {
-	char	*res;
+	char	*new;
 	int		len;
+	int		i;
 
-	len = calc_len(n);
-	res = ft_strnew(len);
-	if (!res)
+	i = 0;
+	len = countnum(n);
+	new = (char *)malloc(sizeof(char) * (len + 1));
+	if (new == 0)
 		return (NULL);
-	if (n < -9223372036854775807)
-		return (ft_strdup("-9223372036854775808"));
+	new[len] = '\0';
+	len--;
 	if (n < 0)
 	{
-		res[0] = '-';
 		n = -n;
+		new[i++] = '-';
 	}
-	res[--len] = n % 10 + '0';
-	while (n > 0)
+	while (len >= i)
 	{
-		res[len--] = n % 10 + '0';
-		n /= 10;
+		new[len] = n % 10 + '0';
+		n = n / 10;
+		len--;
 	}
-	return (res);
+	return (new);
 }

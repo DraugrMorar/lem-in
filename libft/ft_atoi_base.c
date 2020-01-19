@@ -3,51 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi_base.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/25 19:58:34 by nwispmot          #+#    #+#             */
-/*   Updated: 2019/03/25 19:58:39 by nwispmot         ###   ########.fr       */
+/*   Created: 2019/03/10 15:18:37 by dmorar            #+#    #+#             */
+/*   Updated: 2019/04/02 13:57:23 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "./libft.h"
 
-int			nbrbase(const char *str, int base, int res, int i)
+static int	base(int c, int base)
 {
-	while (str[i] != '\0')
+	char	*str;
+	char	*str2;
+	int		i;
+
+	str = "0123456789abcdef";
+	str2 = "0123456789ABCDEF";
+	i = 0;
+	while (i < base)
 	{
-		if (str[i] >= '0' && str[i] <= '9')
-			res = res * base + str[i] - 48;
-		else if (str[i] >= 'A' && str[i] <= 'F')
-			res = res * base + str[i] - 55;
-		else if (str[i] >= 'a' && str[i] <= 'f')
-			res = res * base + str[i] - 87;
+		if (c == str[i] || c == str2[i])
+			return (i);
 		i++;
 	}
-	return (res);
+	return (-1);
 }
 
-int			ft_atoi_base(const char *str, int base)
+int			ft_atoi_base(const char *str, int str_base)
 {
+	int	nb;
+	int negatif;
 	int i;
-	int res;
-	int otr;
 
-	if (!str[0] || (base < 2 || base > 16))
-		return (0);
+	nb = 0;
+	negatif = 0;
 	i = 0;
-	res = 0;
-	otr = 1;
-	while (str[i] == '\t' || str[i] == '\r' || str[i] == '\f'
-	|| str[i] == '\v' || str[i] == ' ')
+	while (str[i] == ' ' || str[i] == '\n' || str[i] == ' ' || str[i] == '\n'
+	|| str[i] == 't' || str[i] == '\t' || str[i] == '\r' || str[i] == '\f')
 		i++;
-	if (str[i] == '-')
+	if (str[i] == '+' || str[i] == '-')
 	{
-		otr = -1;
+		if (str[i] == '-')
+			negatif = 1;
 		i++;
 	}
-	if (str[i] == '+' || str[i] == '-')
+	while (base(str[i], str_base) != -1)
+	{
+		nb = nb * str_base;
+		nb = nb + base(str[i], str_base);
 		i++;
-	res = nbrbase(str, base, res, i);
-	return (otr * res);
+	}
+	if (negatif)
+		return (-nb);
+	return (nb);
 }

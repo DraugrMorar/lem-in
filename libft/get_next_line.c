@@ -3,61 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/26 18:22:23 by nwispmot          #+#    #+#             */
-/*   Updated: 2019/01/19 17:23:21 by nwispmot         ###   ########.fr       */
+/*   Created: 2018/12/14 17:14:41 by dmorar            #+#    #+#             */
+/*   Updated: 2019/02/26 15:55:06 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static	int	count(char *temp)
+static char		*change_line_str(char **str, char **line)
 {
-	int	i;
+	int		i;
+	char	*tmp;
 
 	i = 0;
-	while (temp[i] != '\n' && temp[i] != '\0')
+	while (str[0][i] != '\n' && str[0][i] != '\0')
 		i++;
-	return (i);
-}
-
-static	int	ft_del(char **temp)
-{
-	if (*temp[0] == '\0')
+	*line = ft_strsub(*str, 0, i);
+	tmp = *str;
+	*str = ft_strsub(*str, i + 1, ft_strlen(*str) - i);
+	free(tmp);
+	if (*str[0] == '\0')
 	{
-		free(*temp);
-		*temp = NULL;
-		return (0);
+		free(*str);
+		*str = NULL;
 	}
-	return (1);
+	return (*str);
 }
 
-int			get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
-	static char	*temp[4096];
-	char		*del;
-	char		buff[BUFF_SIZE + 1];
-	int			ret;
+	int			res;
+	char		buf[BUFF_SIZE + 1];
+	static char	*str[1];
+	char		*tmp;
 
-	if (fd < 0 || read(fd, buff, 0) || line == NULL)
+	if (fd < 0 || line == NULL || read(fd, buf, 0))
 		return (-1);
-	if (!temp[fd])
-		temp[fd] = ft_strnew(0);
-	while ((ft_strchr(temp[fd], '\n') == NULL) &&
-			(ret = read(fd, buff, BUFF_SIZE)) > 0)
+	if (!str[fd])
+		str[fd] = ft_strnew(0);
+	while ((ft_strchr(str[fd], '\n') == NULL) &&
+			(res = read(fd, buf, BUFF_SIZE)) > 0)
 	{
-		buff[ret] = '\0';
-		del = temp[fd];
-		temp[fd] = ft_strjoin(temp[fd], buff);
-		free(del);
+		buf[res] = '\0';
+		tmp = str[fd];
+		str[fd] = ft_strjoin(str[fd], buf);
+		free(tmp);
 	}
-	*line = ft_strsub(temp[fd], 0, count(temp[fd]));
-	if (ft_del(&temp[fd]) == 0)
-		return (0);
-	del = temp[fd];
-	temp[fd] = ft_strsub(temp[fd], count(temp[fd]) + 1,
-			ft_strlen(temp[fd]) - count(temp[fd]));
-	free(del);
-	return (1);
+	if (ft_strlen(str[fd]))
+	{
+		str[fd] = change_line_str(&str[fd], line);
+		return (1);
+	}
+	return (0);
 }

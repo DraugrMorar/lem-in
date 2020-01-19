@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/06 21:12:44 by nwispmot          #+#    #+#             */
-/*   Updated: 2018/12/06 21:12:49 by nwispmot         ###   ########.fr       */
+/*   Created: 2018/11/28 12:48:26 by dmorar            #+#    #+#             */
+/*   Updated: 2018/12/12 15:36:44 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,6 @@ char	*ft_strcpy(char *dst, const char *src)
 		dst[i] = src[i];
 		i++;
 	}
-	dst[i] = src[i];
+	dst[i] = '\0';
 	return (dst);
 }

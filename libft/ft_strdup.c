@@ -3,32 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <nwispmot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/04 17:40:28 by nwispmot          #+#    #+#             */
-/*   Updated: 2018/12/19 19:47:55 by nwispmot         ###   ########.fr       */
+/*   Created: 2018/11/28 12:35:48 by dmorar            #+#    #+#             */
+/*   Updated: 2019/03/27 15:48:50 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdlib.h>
 
-char	*ft_strdup(const char *s1)
+char	*ft_strdup(const char *src)
 {
-	int		i;
-	int		j;
-	char	*s2;
+	int		len;
+	char	*copy;
 
-	i = 0;
-	j = 0;
-	while (s1[i])
-		i++;
-	if (!(s2 = (char*)malloc((i + 1) * sizeof(char))))
+	len = 0;
+	while (src[len] != '\0')
+		len++;
+	copy = (char*)malloc(sizeof(*src) * (len + 1));
+	if (copy == NULL)
 		return (NULL);
-	while (j < i)
+	len = 0;
+	while (src[len] != '\0')
 	{
-		s2[j] = s1[j];
-		j++;
+		copy[len] = src[len];
+		len++;
 	}
-	s2[j] = '\0';
-	return (s2);
+	copy[len] = '\0';
+	return (copy);
 }

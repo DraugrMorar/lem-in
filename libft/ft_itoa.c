@@ -3,73 +3,60 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <nwispmot@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/13 18:42:26 by nwispmot          #+#    #+#             */
-/*   Updated: 2018/12/18 18:54:17 by nwispmot         ###   ########.fr       */
+/*   Created: 2018/12/10 16:26:39 by dmorar            #+#    #+#             */
+/*   Updated: 2019/03/20 14:38:47 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	ft_count(intmax_t n)
+static int		ft_countnum(int n)
 {
-	int size;
-	int t;
+	int		i;
 
-	size = 0;
-	t = 0;
+	i = 0;
+	if (n == 0)
+		i++;
 	if (n < 0)
 	{
-		n *= -1;
-		t++;
+		n = -n;
+		i++;
 	}
-	while (n > 9)
+	while (n > 0)
 	{
-		n = n / 10;
-		size++;
+		n = (n / 10);
+		i++;
 	}
-	size++;
-	return (size + t);
+	return (i);
 }
 
-static char	*ma(intmax_t n)
+char			*ft_itoa(int n)
 {
-	char *fresh;
-
-	fresh = NULL;
-	if (n <= -9223372036854775807)
-		fresh = (ft_strdup("-9223372036854775808"));
-	else if (n >= 9223372036854775807)
-		fresh = (ft_strdup("9223372036854775807"));
-	return (fresh);
-}
-
-char		*ft_itoa(intmax_t n)
-{
-	char	*fresh;
+	char	*new;
+	int		len;
 	int		i;
-	int		size;
 
-	if (n <= -9223372036854775807 || n >= 9223372036854775807)
-		return (ma(n));
-	else
+	i = 0;
+	if (n == -2147483648)
+		return (ft_strsub("-2147483648", 0, 12));
+	len = ft_countnum(n);
+	new = (char *)malloc(sizeof(char) * (len + 1));
+	if (new == 0)
+		return (NULL);
+	new[len] = '\0';
+	len--;
+	if (n < 0)
 	{
-		size = ft_count(n);
-		i = size - 1;
-		fresh = ft_strnew(size);
-		fresh[0] = '-';
-		if (n < 0)
-		{
-			n *= -1;
-			size--;
-		}
-		while (size--)
-		{
-			fresh[i--] = (char)((n % 10) + '0');
-			n = n / 10;
-		}
-		fresh[size] = '\0';
+		n = -n;
+		new[i++] = '-';
 	}
-	return (fresh);
+	while (len >= i)
+	{
+		new[len] = n % 10 + '0';
+		n = n / 10;
+		len--;
+	}
+	return (new);
 }

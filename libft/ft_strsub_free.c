@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsub_free.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nwispmot <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dmorar <dmorar@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/29 18:44:27 by nwispmot          #+#    #+#             */
-/*   Updated: 2019/09/29 18:44:31 by nwispmot         ###   ########.fr       */
+/*   Created: 2019/03/24 15:40:47 by dmorar            #+#    #+#             */
+/*   Updated: 2019/03/24 15:41:29 by dmorar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,21 @@
 
 char	*ft_strsub_free(char *s, unsigned int start, size_t len)
 {
-	size_t	i;
-	char	*fresh;
+	char			*new;
+	unsigned int	i;
 
 	i = 0;
-	if (len == (size_t)(-1))
+	if (s == 0)
 		return (NULL);
-	if (!(fresh = (char*)malloc((len + 1) * sizeof(char))))
+	new = (char *)malloc(sizeof(char) * (len + 1));
+	if (new == 0)
 		return (NULL);
-	if (!s)
+	while (len--)
 	{
-		free(&s);
-		return (0);
-	}
-	while (i < len)
-	{
-		fresh[i] = s[start];
+		new[i] = s[start + i];
 		i++;
-		start++;
 	}
-	fresh[i] = '\0';
-	free(&s);
-	return (fresh);
+	new[i] = '\0';
+	free(s);
+	return (new);
 }
